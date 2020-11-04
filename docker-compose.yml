@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+    webserver:
+        build:
+            context: ./webserver
+        container_name: 'lamp-php74'
+        ports:
+            - 80:80
+        volumes:
+            - ./www/:/var/www/html
+
+    database:
+        image: mariadb:10.5.6
+        volumes:
+            - ./data/mariadb:/var/lib/mysql
+        container_name: 'lamp-database'
+        environment:
+            TZ: "Europe/Warsaw"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_ROOT_PASSWORD: ""
+            MYSQL_USER: 'docker'
+            MYSQL_PASSWORD: 'docker'
+
+    phpmyadmin:
+        image: phpmyadmin:5.0.2
+        container_name: 'lamp-phpmyadmin'
+        links:
+            - 'database'
+        ports:
+            - 8080:80
+        environment: 
+            PMA_HOST: database
+            # PMA_PORT: 3306
+            PMA_USER: root
+
+volumes:
+    mariadb-volume:
